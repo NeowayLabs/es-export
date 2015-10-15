@@ -85,7 +85,7 @@ func main() {
 	exporter.Writer(csvWriter)
 	exporter.Progress(showExportProgress)
 
-	// Implement search quey
+	// Implement HERE your search quey
 	query := elastic.NewMatchAllQuery()
 	exporter.Query(query)
 
