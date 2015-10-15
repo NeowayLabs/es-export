@@ -25,7 +25,7 @@ type Exporter struct {
 	writer   *csv.Writer
 }
 
-var bulkSize = 1000
+var bulkSize int64 = 1000
 
 // ExporterProgressFunc is a callback that can be used with Exporter
 // to report progress while reindexing data.
@@ -156,7 +156,7 @@ func (ex *Exporter) Do() (*ExporterResponse, error) {
 
 	cursor, err := scanner.Do()
 
-	bulk := 0
+	bulk := int64(0)
 
 	ret := &ExporterResponse{
 		Errors: make([]*elastic.BulkResponseItem, 0),
@@ -216,12 +216,14 @@ func (ex *Exporter) Do() (*ExporterResponse, error) {
 				}
 
 				if err := ex.writer.Write(values); err != nil {
+					ret.Failed++
 					logger.Warn("Error writing to file: %s", err.Error())
 					continue
 				}
 
 				bulk++
 				if bulk >= bulkSize {
+					ret.Success += bulk
 					bulk = 0
 
 					ex.writer.Flush()
@@ -235,6 +237,8 @@ func (ex *Exporter) Do() (*ExporterResponse, error) {
 	}
 
 	if bulk >= 0 {
+		ret.Success += bulk
+
 		ex.writer.Flush()
 		err = ex.writer.Error()
 		if err != nil {
