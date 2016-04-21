@@ -18,12 +18,12 @@ ENV PATH /go/bin:/usr/local/go/bin:$PATH
 ENV GOPATH /go
 RUN cd /usr/local/go/src && ./make.bash --no-clean 2>&1
 
-WORKDIR /go/src/github.com/NeowayLabs/es-reindex
+WORKDIR /go/src/github.com/NeowayLabs/es-export
 
 ENV CGO_ENABLED 0
 
 # Upload docker source
-COPY . /go/src/github.com/NeowayLabs/es-reindex
+COPY . /go/src/github.com/NeowayLabs/es-export
 
 # Grab Go's cover tool for dead-simple code coverage testing
 RUN go get
